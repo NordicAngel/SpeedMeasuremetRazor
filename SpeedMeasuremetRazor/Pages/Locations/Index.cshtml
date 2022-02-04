@@ -1,0 +1,32 @@
+﻿@page
+@inject ILocationRepo _location
+@using SpeedMeasuremetRazor.Interfaces
+@model SpeedMeasuremetRazor.Pages.Locations.IndexModel
+@{
+}
+
+<h3>Locations</h3>
+<table class="table">
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Address</th>
+        <th>Zone</th>
+        <th>SpeedLimit</th>
+        <th><a class="btn btn-secondary" asp-page="/locations/createlocation">Add</a></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var loc in _location.GetAllLocations())
+    {
+        <tr>
+            <td>@loc.Id</td>
+            <td>@loc.Address</td>
+            <td>@loc.Zone</td>
+            <td>@loc.SpeedLimit</td>
+            <td><form method="post"> <button type="submit" class="btn btn-danger" asp-page-handler="delete" asp-route-id="@loc.Id">Delete</button></form></td>
+            <td><a class="btn btn-secondary" asp-page="/locations/editlocation" asp-route-id="@loc.Id">Edit</a></td>
+        </tr>
+    }
+    </tbody>
+</table>

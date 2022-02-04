@@ -1,0 +1,33 @@
+﻿@page
+@inject ISpeedMeasurementRepo _measurement
+@using SpeedMeasuremetRazor.Interfaces
+@model SpeedMeasuremetRazor.Pages.Locations.IndexModel
+@{
+}
+
+<h3>Locations</h3>
+<table class="table">
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Address</th>
+        <th>Zone</th>
+        <th>SpeedLimit</th>
+        <th><a class="btn btn-secondary" asp-page="/measurements/createmeasurement">Add</a></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var measurement in _measurement.GetAllSpeedMeasurements())
+    {
+        <tr>
+            <td>@measurement.Id</td>
+            <td>@measurement.Location</td>
+            <td>@measurement.Speed</td>
+            <td><img src="@measurement.ImageName"/></td>
+            <td>@measurement.Timestamp</td>
+            <td><form method="post"> <button type="submit" class="btn btn-danger" asp-page-handler="delete" asp-route-id="@measurement.Id">Delete</button></form></td>
+            <td><a class="btn btn-secondary" asp-page="/measurements/editmeasurement" asp-route-id="@measurement.Id">Edit</a></td>
+        </tr>
+    }
+    </tbody>
+</table>
