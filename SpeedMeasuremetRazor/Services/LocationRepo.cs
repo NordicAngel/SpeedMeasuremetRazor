@@ -28,7 +28,7 @@ namespace SpeedMeasuremetRazor.Services
         public void AddLocation(Location location)
         {
             if (_locations.Exists(x => x.Id == location.Id))
-                throw new ArgumentException("A Location with this id already exits");
+                throw new Exceptions.UniqIdException("A Location with this id already exits");
             _locations.Add(location);
         }
 

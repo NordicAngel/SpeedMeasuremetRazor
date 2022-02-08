@@ -24,6 +24,8 @@ namespace SpeedMeasuremetRazor.Services
 
         public void AddSpeedMeasurement(int speed, Location location, string imageName)
         {
+            if (speed > 300 || speed < 0)
+                throw new Exceptions.CalibrationException($"Speed must be between 0 and 300, {speed} does not fulfill this");
             _repo.Add(new SpeedMeasurement()
             {
                 Id = _repo.Count == 0 ? 1 : _repo.Max(x => x.Id) + 1,

@@ -13,7 +13,8 @@ namespace SpeedMeasuremetRazor.Pages.Measurements
     public class CreateMeasurementModel : PageModel
     {
         private ISpeedMeasurementRepo _measurement;
-        [BindProperty] public SpeedMeasurement SpeedMeasurement { get; set; }
+        [BindProperty] public Location Location { get; set; }
+        public string Error { get; set; }
 
         public CreateMeasurementModel(ISpeedMeasurementRepo measurement)
         {
@@ -26,8 +27,19 @@ namespace SpeedMeasuremetRazor.Pages.Measurements
 
         public IActionResult OnPost()
         {
-            SpeedMeasurement.ImageName = MockData.RandomImage;
-            _measurement.AddSpeedMeasurement(SpeedMeasurement.Speed, SpeedMeasurement.Location, SpeedMeasurement.ImageName);
+            SpeedMeasurement m = new SpeedMeasurement();
+            m.Speed = new Random().Next(-20, 375);
+            m.Location = Location;
+            m.ImageName = MockData.RandomImage; 
+            try
+            {
+                _measurement.AddSpeedMeasurement(m.Speed, m.Location, m.ImageName);
+            }
+            catch (Exceptions.CalibrationException e)
+            {
+                Error = $"{e.Message}";
+                return null;
+            }
             return Redirect("/Measurements/");
         }
     }
