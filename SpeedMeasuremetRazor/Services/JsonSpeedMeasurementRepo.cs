@@ -8,47 +8,48 @@ using SpeedMeasuremetRazor.Models;
 
 namespace SpeedMeasuremetRazor.Services
 {
-    public class SpeedMeasurementRepo : ISpeedMeasurementRepo
+    public class JsonSpeedMeasurementRepo : ISpeedMeasurementRepo
     {
-        private List<SpeedMeasurement> _repo;
-
-        public SpeedMeasurementRepo()
-        {
-            _repo = MockData.Measurements;
-        }
-
+        private const string FilePath =
+            @"C:\Users\User\OneDrive\Zealand\SWC\MyApps 2\SpeedMeasuremetRazor\SpeedMeasuremetRazor\Data\SpeedMeasurementData.json";
         public List<SpeedMeasurement> GetAllSpeedMeasurements()
         {
-            return _repo;
+            return JsonFileReader.ReadJson<SpeedMeasurement>(FilePath);
         }
 
         public void AddSpeedMeasurement(int speed, Location location, string imageName)
         {
             if (speed > 300 || speed <= 0)
                 throw new Exceptions.CalibrationException($"Speed must be between 0 and 300, {speed} does not fulfill this");
-            _repo.Add(new SpeedMeasurement()
+            
+            List<SpeedMeasurement> repo = GetAllSpeedMeasurements();
+            
+            repo.Add(new SpeedMeasurement()
             {
-                Id = _repo.Count == 0 ? 1 : _repo.Max(x => x.Id) + 1,
+                Id = repo.Count == 0 ? 1 : repo.Max(x => x.Id) + 1,
                 Speed = speed,
                 Location = location,
                 ImageName = imageName,
                 Timestamp = DateTime.Now
             });
+
+            JsonFileWriter.WriteJson(repo, FilePath);
         }
 
         public double AvarageSpeed()
         {
-            return _repo.Average(x => x.Speed);
+            return JsonFileReader.ReadJson<SpeedMeasurement>(FilePath).Average(s => s.Speed);
         }
 
         public int NoOfOverSpeedLimit()
         {
-            return _repo.Count(x => x.Speed > x.Location.SpeedLimit);
+            return JsonFileReader.ReadJson<SpeedMeasurement>(FilePath).Count(x => x.Speed > x.Location.SpeedLimit);
         }
 
         public int NoOfCutInLicense()
         {
-            return _repo.Count(x => x.Speed > x.Location.SpeedLimit * 1.3);
+            return JsonFileReader.ReadJson<SpeedMeasurement>(FilePath)
+                .Count(x => x.Speed > x.Location.SpeedLimit * 1.3);
         }
 
         public int NoOfCutInLicenseForeach()
@@ -58,14 +59,17 @@ namespace SpeedMeasuremetRazor.Services
 
         public int NoOfConditionalRevocation()
         {
-            return _repo.Count(x => x.Location.Zone == Zone.Motorvej && x.Location.SpeedLimit >= 130?
+            return JsonFileReader.ReadJson<SpeedMeasurement>(FilePath)
+                .Count(x => x.Location.Zone == Zone.Motorvej && x.Location.SpeedLimit >= 130 ?
                 x.Speed > x.Location.SpeedLimit * 1.3 :
                 x.Speed > x.Location.SpeedLimit * 1.6);
         }
 
         public void DeleteSpeedMeasurement(int id)
         {
-            _repo.RemoveAt(_repo.FindIndex(x => x.Id == id));
+            List<SpeedMeasurement> repo = JsonFileReader.ReadJson<SpeedMeasurement>(FilePath);
+            repo.RemoveAll(s => s.Id == id);
+            JsonFileWriter.WriteJson(repo, FilePath);
         }
     }
 }

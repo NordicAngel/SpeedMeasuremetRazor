@@ -76,7 +76,7 @@ namespace SpeedMeasuremetRazor.Helpers
         {
             get
             {
-                return _images[r.Next(0, _images.Count)];
+                return "images\\" + _images[r.Next(0, _images.Count)];
             }
         }
 
